@@ -1,0 +1,39 @@
+[
+    {
+        "precio": 10000,
+        "id": 1,
+        "title": "Disco Sólido",
+        "img": "productos/imagen1.jpg"
+    },
+    {
+        "precio": 8000,
+        "id": 2,
+        "title": "Fuente",
+        "img": "/productos/imagen2.jpg"
+    },
+    {
+        "precio": 6500,
+        "id": 3,
+        "title": "Gabinete",
+        "img": "productos/imagen3.jpg"
+    },
+    {
+        "precio": 21000,
+        "id": 4,
+        "title": "Tarjeta Gráfica",
+        "img": "productos/imagen4.jpg"
+    },
+    {
+        "precio": 15000,
+        "id": 5,
+        "title": "Procesador",
+        "img": "productos/imagen5.jpg"
+    },
+    {
+        "precio": 11000,
+        "id": 6,
+        "title": "Memoria RAM",
+        "img": "productos/imagen6.jpg"
+    }
+]
+    
