@@ -1,3 +1,4 @@
+//Llamando elementos del DOM
 const cards = document.getElementById("cards")
 const items = document.getElementById("items")
 const footer = document.getElementById("footer")
@@ -8,22 +9,15 @@ const fragment = document.createDocumentFragment()
 
 let carrito = {}
 
+//Captura de datos del api.json
 document.addEventListener("DOMContentLoaded", () => {
     fetchData()
+    //Cargar objetos guardados en el localStorage, si los hay.
     if(localStorage.getItem("carrito")) {
         carrito = JSON.parse(localStorage.getItem("carrito"))
         crearCarrito()
     }
 })
-
-cards.addEventListener("click", e => {
-    agregarCarrito(e)
-})
-
-items.addEventListener("click", e => {
-    btnAccion(e)
-})
-
 const fetchData = async () => {
     try {
         const res = await fetch("api.json")
@@ -34,28 +28,43 @@ const fetchData = async () => {
     }
 }
 
+
+//Botón Añadir al Carrito
+cards.addEventListener("click", e => {
+    agregarCarrito(e)
+})
+
+//Botón Sumar y Restar
+items.addEventListener("click", e => {
+    btnAccion(e)
+})
+
+
+
+//Creando atributos de los productos
 const crearCards = data => {
     data.forEach(producto => {
         templateCard.querySelector("h5").textContent = producto.title
         templateCard.querySelector("p").textContent = producto.precio
+//Estableciendo el valor del atributo con .setAttribute
         templateCard.querySelector("img").setAttribute("src", producto.img)
         templateCard.querySelector(".btn-primary").dataset.id = producto.id
-
+//Clonando los productos
         const clone = templateCard.cloneNode(true)
         fragment.appendChild(clone)
     })
     cards.appendChild(fragment)
 }
 
+
 const agregarCarrito = e => {
-    // console.log(e.target);
-    // console.log(e.target.classList.contains("btn-primary"));
     if(e.target.classList.contains("btn-primary")) {
         setCarrito(e.target.parentElement)
     }
+    //Deteniendo el evento con .stopPropagation
     e.stopPropagation()
 }
-
+//Capturando elementos agregados al Carrito
 const setCarrito = objeto => {
     // console.log(objeto);
     const producto = {
@@ -64,17 +73,17 @@ const setCarrito = objeto => {
         precio: objeto.querySelector("p").textContent,
         cantidad: 1
     }
-
+//Aumentando la cantidad de un producto ya existente en el Carrito
     if(carrito.hasOwnProperty(producto.id)) {
         producto.cantidad = carrito[producto.id].cantidad + 1
     }
-
+//Copiando productos con Spread {...}
     carrito[producto.id] = {...producto}
     crearCarrito()
 }
 
 const crearCarrito = () => {
-    // console.log(carrito);
+    //Arranca Vacío
     items.innerHTML = ""
     Object.values(carrito).forEach(producto => {
         templateCarrito.querySelector("th").textContent = producto.id
@@ -82,6 +91,7 @@ const crearCarrito = () => {
         templateCarrito.querySelectorAll("td")[1].textContent = producto.cantidad
         templateCarrito.querySelector(".btn-info").dataset.id = producto.id
         templateCarrito.querySelector(".btn-danger").dataset.id = producto.id
+        //Multiplicando el precio según la cantidad de productos
         templateCarrito.querySelector("span").textContent = producto.cantidad * producto.precio
         const clone = templateCarrito.cloneNode(true)
         fragment.appendChild(clone)
@@ -90,11 +100,13 @@ const crearCarrito = () => {
 
     crearFooter()
 
+    //Guardando Objetos en el localStorage
     localStorage.setItem("carrito", JSON.stringify(carrito))
 }
 
 const crearFooter = () => {
     footer.innerHTML = ""
+    //Cambiar el texto una vez el Carrito se vacíe
     if(Object.keys(carrito).length === 0) {
         footer.innerHTML = `
         <th scope="row" colspan="5">Carrito Vacío</th>
@@ -103,6 +115,7 @@ const crearFooter = () => {
         return
     }
 
+    //Utilizando .reduce para sumar cantidades y precios
     const nCantidad = Object.values(carrito).reduce((acum, {cantidad}) => acum + cantidad, 0)
     const nPrecio = Object.values(carrito).reduce((acum, {cantidad, precio}) => acum + cantidad * precio, 0)
    
@@ -113,6 +126,7 @@ const crearFooter = () => {
     fragment.appendChild(clone)
     footer.appendChild(fragment)
 
+    //Botón y evento Vaciar Carrito
     const btnVaciar = document.getElementById("vaciar-carrito")
     btnVaciar.addEventListener("click", () => {
         carrito = {}
@@ -120,7 +134,9 @@ const crearFooter = () => {
     })
 }
 
+//Constante para los botones sumar y restar
 const btnAccion = e => {
+    //Evento para aumentar
     if(e.target.classList.contains("btn-info")) {
         console.log(carrito[e.target.dataset.id])
         const producto = carrito[e.target.dataset.id]
@@ -128,10 +144,11 @@ const btnAccion = e => {
         carrito[e.target.dataset.id] = {...producto}
         crearCarrito()
     }
-
+    //Evento para disminuir
     if(e.target.classList.contains("btn-danger")){
         const producto = carrito[e.target.dataset.id]
         producto.cantidad--
+        //Eliminar el objeto del Carrito
         if(producto.cantidad === 0) {
             delete carrito[e.target.dataset.id]
         }
